@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/material_icons.css">
+    <link rel="stylesheet" href="css/w3.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/animate.css">
+    <script src="js/jquery-3.1.0.min.js"></script>
+    <script>
+        $(document).ready(function (){
+            $("#card_holder").load("resources/output.html");
+
+            document.getElementById("search").addEventListener("input", updateCards);
+            function updateCards()
+            {
+                var allCards = $("#card_holder").children;
+                var search = $("#search").val();
+                $("#card_holder").children("").children().not("[id$='ops-bufmond/']").css("background-color", "yellow");
+                //$("#card_holder").children("").children().css("background-color", "");
+            }
+        });
+    </script>
+</head>
+<body>
+
+<div class="w3-container" style="position: relative;">
+    <div class="w3-card-2 w3-margin" style="position: relative;">
+        <form class="w3-container w3-green w3-padding">
+            <span class="w3-row">
+                <input id="search" class="w3-input w3-round w3-col" type="text" placeholder="ops-switchd" style="width: 90%">
+                <div class="w3-rest w3-center w3-padding-left ">
+                    <i class="material-icons" style="line-height: 39px">search</i>
+                </div>
+            </span>
+        </form>
+    </div>
+</div>
+<div id="card_holder" class="w3-container" style="position: relative;">
+</div>
+
+</body>
+</html>
