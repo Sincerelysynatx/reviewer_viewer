@@ -13,26 +13,34 @@
     <script src="js/jquery-3.1.0.min.js"></script>
     <script>
         $(document).ready(function (){
-            $("#card_holder").load("resources/output.html");
+            $("#card_holder").load("resources/output.html", function()
+            {
+                /*
+                var heights = $(".card").map(function ()
+                {
+                    return $(this).height();
+                }).get(), maxHeight = Math.max.apply(null, heights);
+
+*/            });
 
             document.getElementById("search").addEventListener("input", updateCards);
             function updateCards()
             {
-                var allCards = $("#card_holder").children;
                 var search = $("#search").val();
-                $("#card_holder").children("").children().not("[id$='ops-bufmond/']").css("background-color", "yellow");
-                //$("#card_holder").children("").children().css("background-color", "");
+                $("#card_holder").children("").css("display", "inline");
+                if (search != "")
+                    $("#card_holder").children("").not("[id*='" + search + "']").css("display", "none");
             }
         });
     </script>
 </head>
 <body>
 
-<div class="w3-container" style="position: relative;">
+<div class="w3-container w3-large" style="position: relative;">
     <div class="w3-card-2 w3-margin" style="position: relative;">
         <form class="w3-container w3-green w3-padding">
             <span class="w3-row">
-                <input id="search" class="w3-input w3-round w3-col" type="text" placeholder="ops-switchd" style="width: 90%">
+                <input id="search" class="w3-input w3-round w3-col" type="text" placeholder="ops-switchd or nehal.patel" style="width: 90%">
                 <div class="w3-rest w3-center w3-padding-left ">
                     <i class="material-icons" style="line-height: 39px">search</i>
                 </div>
@@ -40,7 +48,7 @@
         </form>
     </div>
 </div>
-<div id="card_holder" class="w3-container" style="position: relative;">
+<div id="card_holder" class="w3-container w3-large" style="position: relative;">
 </div>
 
 </body>
