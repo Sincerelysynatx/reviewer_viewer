@@ -20,3 +20,8 @@
     -webkit-font-feature-settings: 'liga';
     -webkit-font-smoothing: antialiased;
 }
+
+.material-icons.white
+{
+    color: #ffffff;
+}

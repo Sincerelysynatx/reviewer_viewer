@@ -4,8 +4,6 @@ import operator
 
 dir_for_halon_root = "../../halon"
 
-dir_for_output = "../website/resources/reviewers.txt"
-
 p = subprocess.Popen(['find', dir_for_halon_root,'-name', 'REVIEWERS'], 
                      stdout=subprocess.PIPE,
                      stderr=subprocess.PIPE)

@@ -38,13 +38,6 @@ sean.pat.pimentel@hpe.com
                 $grid.masonry('layout');
                 if (search != "")
                 {
-                    /*
-                    var cards = $(".grid-item").filter(function() {
-                        return $(this).attr('id').toLowerCase().indexOf(search) > -1;
-                    });
-
-                    cards.css("display", "none");
-                     */
                     $("#card_holder").children("").not("[id*='" + search.toLowerCase() + "']").css("display", "none");
                     $grid.masonry('layout');
                 }
@@ -62,16 +55,16 @@ sean.pat.pimentel@hpe.com
 <body>
 
 <div class="w3-container w3-center">
-    <h1>Halon Module Reviewer</h1>
+    <p class="w3-xxxlarge"><b>Halon Module Reviewers</b></p>
 </div>
 
 <div class="w3-container w3-large" style="position: relative;">
     <div class="w3-card-2 w3-margin" style="position: relative;">
         <form class="w3-container w3-padding" style="background-color: #01A982">
             <span class="w3-row">
-                <input id="search" class="w3-input w3-round w3-col" type="text" placeholder="ops-switchd or nehal.patel" autocomplete="off" style="width: 90%">
+                <input id="search" class="w3-input w3-round w3-col" type="text" placeholder="ops-switchd or Nehal" autocomplete="off" style="width: 90%">
                 <div class="w3-rest w3-center w3-padding-left ">
-                    <i class="material-icons" style="line-height: 39px">search</i>
+                    <i class="material-icons white" style="line-height: 39px">search</i>
                 </div>
             </span>
         </form>
@@ -82,7 +75,7 @@ sean.pat.pimentel@hpe.com
 </div>
 
 <footer class="w3-container w3-display-container w3-bottom" style="height: 74px; background-color: #01A982">
-    <p class="w3-text-white w3-left" style="margin-top: 26px"><b>Module Reviewer v1.0</b></p>
+    <p class="w3-text-white w3-left" style="margin-top: 26px"><b>Module Reviewer v1.1</b></p>
     <p class="w3-text-white w3-right-align"><b>Contact / Report a bug</b><br><a href="mailto:sean.pat.pimentel@hpe.com?Subject=Module%20Viewer%20Contact/Bug%20Report" target="_top">sean.pat.pimentel@hpe.com</a></p>
 </footer>
 
