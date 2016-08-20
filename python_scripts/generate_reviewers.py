@@ -21,18 +21,34 @@ for i in range(0, array_len - 1):
             temp_array_of_read_emails.remove("\n")
         temp_array_of_read_emails = [f.replace("\n", "") for f in temp_array_of_read_emails]
         names = []
+        getManager = True
         for email in temp_array_of_read_emails:
-            cmd = "ypcat passwd | grep " + email + " | awk -F: '{print $5}' | awk -F, '{print $1}'"
+            cmd = "ldap " + email + " | grep ^cn: | awk -F: '{print $2}'"
             p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            out = p.communicate()[0]
-            out.rstrip()
-            if out == "":
-                out = "ERROR WITH LOOKUP IN YPCAT\n"
-            names.append("Name: " + out + "Email: " + email)
+            name = p.communicate()[0]
+            name.rstrip()
+            if name == "":
+                name = "ERROR WITH LOOKUP IN YPCAT\n"
+            if getManager:
+                manager_cmd = "ldap " + email + " | grep manager: | awk -F: '{print $2}' | awk -F, '{print $1}' | awk -F= '{print $2}'"
+                p = subprocess.Popen(manager_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                manager_email = p.communicate()[0]
+                manager_email.replace("\n", "")
+                manager_email = manager_email[:-1]
+                manager_name_cmd = "ldap " + manager_email + " | grep ^cn: | awk -F: '{print $2}'"
+                p = subprocess.Popen(manager_name_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                manager_name = p.communicate()[0]
+                manager_name.replace("\n", "")
+                if manager_name == "":
+                    manager_name = "ERROR WITH LOOKUP IN YPCAT\n"
+                names.append("Manager: " + manager_name + "Email: " + manager_email)
+                getManager = False
+            names.append("Name: " + name + "Email: " + email)
         array_names.append(names)
+        getManager = True
         file.close()
 
-# Format the string for display
+# Format the module string for display
 array_files = [f.replace('../../', '') for f in array_files]
 array_files = [f.replace('halon-src/', '') for f in array_files]
 array_files = [f.replace('REVIEWERS', '') for f in array_files]
@@ -52,7 +68,7 @@ html_output = ""
 for module, members in sorted_dictionary:
     html_output += """<div id="{} {}" class="grid-item">
     <div class="w3-card-8 w3-margin card"><h2 class="w3-center w3-text-white w3-padding" style="background-color: #5F7A76;">{}</h2>
-    <div class="w3-padding"><p class="w3-large" style="white-space: pre-line">{}</p></div></div>
+    <div class="w3-padding"><div class="w3-large" style="white-space: pre-line">{}</div></div></div>
     </div>""".format(module, "".join(members).lower(), module, "\n\n".join(members)) + "\n"
 
 print(html_output)
