@@ -1,0 +1,5 @@
+#!/bin/sh
+USERMAIL=$1
+LDAPSEARCH=/usr/bin/ldapsearch 
+$LDAPSEARCH -x -h ldap.hp.com -S hpStatus -b ou=People,o=hp.com uid=$USERMAIL 
+

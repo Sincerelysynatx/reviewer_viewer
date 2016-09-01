@@ -65,18 +65,12 @@ sorted_list = sorted(dictionary.items(), key=operator.itemgetter(0))
 
 html_output = ""
 
-while sorted_list:
-    pair = sorted_list.pop(0)
-    html_output += """<div id="{} """.format(pair[0])
-    for member in pair[1]:
-    	html_output += """{}""".format(member.lower())
-    html_output += """" class="grid-item"><div class="w3-card-8 w3-margin card"><h2 class="w3-center w3-text-white w3-padding" style="background-color: #5F7A76;">{}</h2><div class="w3-padding"><div class="w3-large" style="white-space: pre-line"><div class="w3-dropdown-hover w3-hover-khaki" style="width: 100%">{}<i class="material-icons" style="position: relative; bottom: 28px; float: right">perm_identity</i><div class="w3-dropdown-content w3-card-8 w3-padding w3-round">{}</div></div>""".format(pair[0], pair[1].pop(1) + "\n", pair[1].pop(0))
-    for member in pair[1]:
-    	html_output += """{}\n\n""".format(member)
-    html_output += """</div></div></div></div>\n"""
+while True:
+    pair = sorted_list.pop()
+    if pair is null:
+        break
+    for members in pair[1]:
 
-# hmtl_output += """<div id="{} {}" class="grid-item">
+#hmtl_output += """<div id="{} {}" class="grid-item">
     #<div class="w3-card-8 w3-margin card"><h2 class="w3-center w3-text-white w3-padding" style="background-color: #5F7A76;">{}</h2><div class="w3-padding"><div class="w3-large" style="white-space: pre-line">""".format(module, "".join(pair[1]).lower(), module)
-# """{}</div></div></div></div>"""
-
-print(html_output)
+"""{}</div></div></div></div>"""
