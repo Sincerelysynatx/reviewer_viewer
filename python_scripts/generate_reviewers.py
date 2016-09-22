@@ -1,8 +1,17 @@
 import subprocess
 import math
 import operator
+import re
 
-dir_for_halon_root = "../../halon"
+dir_for_halon_root = "/users/pimentes/Desktop/halon/"
+
+p = subprocess.Popen(["git", "-C", dir_for_halon_root, "pull"],
+		     stdout=subprocess.PIPE,
+		     stderr=subprocess.PIPE)
+
+out, err = p.communicate()
+
+print(out)
 
 p = subprocess.Popen(['find', dir_for_halon_root,'-name', 'REVIEWERS'], 
                      stdout=subprocess.PIPE,
@@ -10,10 +19,15 @@ p = subprocess.Popen(['find', dir_for_halon_root,'-name', 'REVIEWERS'],
 
 out, err = p.communicate()
 
+print(out)
+
 array_files = out.split("\n")
 array_len = len(array_files)
 array_names = []
 names = []
+
+print(array_files)
+
 for i in range(0, array_len - 1):
     with open(array_files[i], "r") as file:
         temp_array_of_read_emails = file.readlines()
@@ -48,6 +62,8 @@ for i in range(0, array_len - 1):
         getManager = True
         file.close()
 
+print("Done finding names")
+
 # Format the module string for display
 array_files = [f.replace('../../', '') for f in array_files]
 array_files = [f.replace('halon-src/', '') for f in array_files]
@@ -75,8 +91,10 @@ while sorted_list:
     	html_output += """{}\n\n""".format(member)
     html_output += """</div></div></div></div>\n"""
 
-# hmtl_output += """<div id="{} {}" class="grid-item">
-    #<div class="w3-card-8 w3-margin card"><h2 class="w3-center w3-text-white w3-padding" style="background-color: #5F7A76;">{}</h2><div class="w3-padding"><div class="w3-large" style="white-space: pre-line">""".format(module, "".join(pair[1]).lower(), module)
-# """{}</div></div></div></div>"""
+print("Done generating html")
 
-print(html_output)
+output_file = open("/users/pimentes/Desktop/reviewer_viewer/website/resources/reviewers.txt", "w")
+
+output_file.write(html_output)
+
+output_file.close()
