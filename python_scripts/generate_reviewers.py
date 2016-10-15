@@ -1,9 +1,14 @@
+#!/usr/bin/env python
 import subprocess
 import math
 import operator
 import re
 
-dir_for_halon_root = "/users/pimentes/Desktop/halon/"
+dir_for_halon_root = "/ws/pimentes/halon"
+
+# Update halon to get new modules / reviewer files
+
+print("Updating Halon Repository")
 
 p = subprocess.Popen(["git", "-C", dir_for_halon_root, "pull"],
 		     stdout=subprocess.PIPE,
@@ -13,6 +18,12 @@ out, err = p.communicate()
 
 print(out)
 
+print("Done Updating Halon Repository")
+
+# Run recursive find to gather all the paths to the reviewer files
+
+print("Finding Reviewer Files")
+
 p = subprocess.Popen(['find', dir_for_halon_root,'-name', 'REVIEWERS'], 
                      stdout=subprocess.PIPE,
                      stderr=subprocess.PIPE)
@@ -21,65 +32,84 @@ out, err = p.communicate()
 
 print(out)
 
+print("Done Finding Reviewer Files")
+
+# Take all the results from the find and put them into an array and remove empty directories
+
 array_files = out.split("\n")
-array_len = len(array_files)
+array_files.remove("")
 array_names = []
 names = []
 
+# Take everything that doesn't come from the halon-test folder path and reassign
+
+array_files_processed = []
+
+for file in array_files:
+    if "halon-test" not in file:
+        array_files_processed.append(file)
+
+array_files = array_files_processed
+
 print(array_files)
 
-for i in range(0, array_len - 1):
+array_len = len(array_files)
+
+print("Generating Managers and Names")
+
+for i in range(0, array_len):
     with open(array_files[i], "r") as file:
         temp_array_of_read_emails = file.readlines()
         if "\n" in temp_array_of_read_emails:
-            temp_array_of_read_emails.remove("\n")
-        temp_array_of_read_emails = [f.replace("\n", "") for f in temp_array_of_read_emails]
+            temp_array_of_read_emails.remove("\n") # if there are "\n" values in the array remove them
+        temp_array_of_read_emails = [f.replace("\n", "") for f in temp_array_of_read_emails] # if there are \n's at the end of the values in the string remove it
         names = []
         getManager = True
         for email in temp_array_of_read_emails:
-            cmd = "ldap " + email + " | grep ^cn: | awk -F: '{print $2}'"
-            p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            cmd = "/usr/bin/ldapsearch -x -h ldap.hp.com -S hpStatus -b ou=People,o=hp.com uid=" + email + " | grep ^cn: | awk -F: '{print $2}'"
+            p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
             name = p.communicate()[0]
-            name.rstrip()
+            name = name[:-1]
             if name == "":
-                name = "ERROR WITH LDAP NAME LOOKUP\n"
+                name = "ERROR WITH LDAP NAME LOOKUP"
             if getManager:
-                manager_cmd = "ldap " + email + " | grep manager: | awk -F: '{print $2}' | awk -F, '{print $1}' | awk -F= '{print $2}'"
-                p = subprocess.Popen(manager_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                manager_cmd = "/usr/bin/ldapsearch -x -h ldap.hp.com -S hpStatus -b ou=People,o=hp.com uid=" + email + " | grep manager: | awk -F: '{print $2}' | awk -F, '{print $1}' | awk -F= '{print $2}'"
+                p = subprocess.Popen(manager_cmd, shell=True, stdout=subprocess.PIPE)
                 manager_email = p.communicate()[0]
-                manager_email.replace("\n", "")
                 manager_email = manager_email[:-1]
-                manager_name_cmd = "ldap " + manager_email + " | grep ^cn: | awk -F: '{print $2}'"
-                p = subprocess.Popen(manager_name_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                manager_name_cmd = "/usr/bin/ldapsearch -x -h ldap.hp.com -S hpStatus -b ou=People,o=hp.com uid=" + manager_email + " | grep ^cn: | awk -F: '{print $2}'"
+                p = subprocess.Popen(manager_name_cmd, shell=True, stdout=subprocess.PIPE)
                 manager_name = p.communicate()[0]
-                manager_name.replace("\n", "")
+                manager_name = manager_name[:-1]
                 if manager_name == "":
-                    manager_name = "ERROR WITH LDAP NAME LOOKUP\n"
-                names.append("Manager: " + manager_name + "Email: " + manager_email)
+                    manager_name = "ERROR WITH LDAP NAME LOOKUP"
+                names.append("Manager: " + manager_name + "\nEmail: " + manager_email)
                 getManager = False
-            names.append("Name: " + name + "Email: " + email)
+            names.append("Name: " + name + "\nEmail: " + email)
         array_names.append(names)
         getManager = True
         file.close()
 
-print("Done finding names")
+print("Done Generating Names")
 
-# Format the module string for display
-array_files = [f.replace('../../', '') for f in array_files]
-array_files = [f.replace('halon-src/', '') for f in array_files]
-array_files = [f.replace('REVIEWERS', '') for f in array_files]
-array_files = [f.replace('halon/', '') for f in array_files]
-array_files = [f.replace('/', '') for f in array_files]
+# Crop all uncessary inf
 
-for n, i in enumerate(array_files):
-    if i == "":
-        array_files[n] = "halon"
+array_files_shorthand = []
 
-dictionary = dict(zip(array_files, array_names))
+for file in array_files:
+    search = re.search('[^/]+(?=/REVIEWERS)', file)
+    result = search.group(0)
+    array_files_shorthand.append(result)
+
+array_files = array_files_shorthand
+
+dictionary = dict(zip(array_files_shorthand, array_names))
 
 sorted_list = sorted(dictionary.items(), key=operator.itemgetter(0))
 
 html_output = ""
+
+print("Generating HTML")
 
 while sorted_list:
     pair = sorted_list.pop(0)
@@ -91,9 +121,11 @@ while sorted_list:
     	html_output += """{}\n\n""".format(member)
     html_output += """</div></div></div></div>\n"""
 
-print("Done generating html")
+print(html_output)
 
-output_file = open("/users/pimentes/Desktop/reviewer_viewer/website/resources/reviewers.txt", "w")
+print("Done Generating HTML")
+
+output_file = open("/var/www/html/halon_src_reviewers/resources/output.html", "w")
 
 output_file.write(html_output)
 
