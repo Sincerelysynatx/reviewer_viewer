@@ -214,6 +214,9 @@ remove_cookie_cutters()
 #     card.print_card()
 generate_html(dir_for_output_file, "halon-src");
 
+for module in list_of_halon_modules:
+    del module
+
 dir_for_halon_root = "/ws/web/halon/halon-test/"
 paths = find_all_REVIEWER_files(dir_for_halon_root)
 list_of_files = create_list_from_bash_output(paths)
