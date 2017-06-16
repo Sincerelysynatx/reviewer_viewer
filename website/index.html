@@ -19,29 +19,62 @@ sean.pat.pimentel@hpe.com
     <script src="js/jquery-3.1.0.min.js"></script>
     <script src="js/masonry.pkgd.min.js"></script>
     <script>
+        var $grid;
+        var source_or_test = 1; //0 to show halon source 1 to show halon test
+        var SOURCE_PREFIX = "halon-src";
+        var TEST_PREFIX = "halon-test";
+
         $(document).ready(function (){
-            var $grid;
-            $("#card_holder").load("resources/output.html", function()
+            $("#module-holder").load("resources/output.html", function()
             {
                 $grid = $(".grid").masonry({
                     itemSelector:'.grid-item',
                     columnWidth: 10
-                })
+                });
             });
             document.getElementById("search").addEventListener("input", updateCards);
-
-            function updateCards()
-            {
-                var search = $("#search").val();
-                $("#card_holder").children("").css("display", "inline");
-                $grid.masonry('layout');
-                if (search != "")
-                {
-                    $("#card_holder").children("").not("[id*='" + search.toLowerCase() + "']").css("display", "none");
-                    $grid.masonry('layout');
-                }
-            }
         });
+
+        function updateCards()
+        {
+            //Get search bar value
+            var search = $("#search").val();
+
+            console.log(((source_or_test)? SOURCE_PREFIX : TEST_PREFIX) + ': ' + search.toLowerCase());
+
+            //Reset so all children show
+            $("#module-holder").children("").css("display", "inline");
+
+            //Reload layout
+            $grid.masonry('layout');
+            if (search != "")
+            {
+                $("#module-holder").children("").not("[id*='" + ((source_or_test)? SOURCE_PREFIX : TEST_PREFIX) + "'][id*='" + search.toLowerCase() + "']").css("display", "none");
+                $grid.masonry('layout');
+            }
+            else
+            {
+                console.log("Setting empty search toggle");
+                $("#module-holder").children("").not("[id*='" + ((source_or_test)? SOURCE_PREFIX : TEST_PREFIX) + "']").css("display", "none");
+                $grid.masonry('layout');
+            }
+        }
+
+        function switch_grid(name) {
+            if (name == "source"){
+                $("#halon_src_btn").addClass(" w3-grey");
+                $("#halon_test_btn").removeClass(" w3-grey");
+                source_or_test = 1;
+                updateCards();
+            }
+            else if (name == "test"){
+                $("#halon_test_btn").addClass(" w3-grey");
+                $("#halon_src_btn").removeClass(" w3-grey");
+                source_or_test = 0;
+                updateCards();
+            }
+        }
+
         $(document).keypress(
             function(event){
                 if (event.which == '13'){
@@ -61,8 +94,10 @@ sean.pat.pimentel@hpe.com
     <div class="w3-card-2 w3-margin" style="position: relative;">
         <form class="w3-container w3-padding" style="background-color: #01A982">
             <span class="w3-row">
-                <input id="search" class="w3-input w3-round w3-col" type="text" placeholder="ops-switchd or Nehal" autocomplete="off" style="width: 90%">
-                <div class="w3-rest w3-center w3-padding-left ">
+                <input id="search" class="w3-input w3-round w3-col" type="text" placeholder="ops-switchd or Nehal" autocomplete="off" style="width: 60%">
+                <div class="w3-btn-bar w3-rest w3-center">
+                    <div class="w3-btn w3-margin-left w3-large" id="halon_src_btn" onclick="switch_grid('source')">Halon Source</div>
+                    <div class="w3-btn w3-large" id="halon_test_btn" onclick="switch_grid('test')">Halon Test</div>
                     <i class="material-icons white" style="line-height: 39px">search</i>
                 </div>
             </span>
@@ -70,11 +105,11 @@ sean.pat.pimentel@hpe.com
     </div>
 </div>
 
-<div id="card_holder" class="w3-container grid" style="margin-bottom: 74px">
+<div id="module-holder" class="w3-container grid" style="margin-bottom: 74px">
 </div>
 
 <footer class="w3-container w3-display-container w3-bottom" style="height: 74px; background-color: #01A982">
-    <p class="w3-text-white w3-left" style="margin-top: 26px"><b>Module Reviewer v1.2</b></p>
+    <p class="w3-text-white w3-left" style="margin-top: 26px"><b>Module Reviewer v2</b></p>
     <p class="w3-text-white w3-right-align"><b>Contact / Report a bug</b><br><a href="mailto:sean.pat.pimentel@hpe.com?Subject=Module%20Viewer%20Contact/Bug%20Report" target="_top">sean.pat.pimentel@hpe.com</a></p>
 </footer>
 

@@ -3,130 +3,221 @@ import subprocess
 import math
 import operator
 import re
+import pdb
+import threading
 
-dir_for_halon_root = "/ws/pimentes/halon"
+global list_of_halon_modules
+list_of_halon_modules = []
 
-# Update halon to get new modules / reviewer files
+class Person:
+    def __init__(self, email, name):
+        self.email = email
+        self.name = name
 
-print("Updating Halon Repository")
+class Module:
+    def __init__(self, name, path):
+        self.name = name
+        self.path = path
+        self.reviewers = []
+        self.manager = Person("", "")
 
-p = subprocess.Popen(["git", "-C", dir_for_halon_root, "pull"],
-		     stdout=subprocess.PIPE,
-		     stderr=subprocess.PIPE)
+    def print_card(self):
+        print(self.name + " " + self.path)
+        print('\t' + "Manager of module manager: " + self.manager.name + " " + self.manager.email)
+        for reviewer in self.reviewers:
+            print('\t' + reviewer.name + " " + reviewer.email)
 
-out, err = p.communicate()
 
-print(out)
+# Run find to gather all the paths to the reviewer files
 
-print("Done Updating Halon Repository")
+def find_all_REVIEWER_files(directory):
+    print("Finding REVIEWER Files")
 
-# Run recursive find to gather all the paths to the reviewer files
-
-print("Finding Reviewer Files")
-
-p = subprocess.Popen(['find', dir_for_halon_root,'-name', 'REVIEWERS'], 
+    p = subprocess.Popen(['find', directory,'-name', 'REVIEWERS'],
                      stdout=subprocess.PIPE,
                      stderr=subprocess.PIPE)
 
-out, err = p.communicate()
-
-print(out)
-
-print("Done Finding Reviewer Files")
+    out, err = p.communicate()
+    print("Done Finding REVIEWER Files")
+    return out
 
 # Take all the results from the find and put them into an array and remove empty directories
 
-array_files = out.split("\n")
-array_files.remove("")
-array_names = []
-names = []
+def create_list_from_bash_output(paths):
+    array_files = paths.splitlines()
+    for path in array_files:
+        list_of_halon_modules.append(Module(get_name_of_module(path), path))
+    #array_files.remove("")
+    #print(array_files)
+    return array_files
 
-# Take everything that doesn't come from the halon-test folder path and reassign
+# Unused, was needed before
+def remove_unwanted_paths(array_files, keywords):
+    array_files_processed = []
+    for file in array_files:
+        for keyword in keywords:
+            if keyword not in file:
+                array_files_processed.append(file)
+    # print(array_files_processed)
+    return array_files_processed
+    #for file in array_files:
+    #    if keywords not in file:
+    #        array_files_processed.append(file)
 
-array_files_processed = []
+#
 
-for file in array_files:
-    if "halon-test" not in file:
-        array_files_processed.append(file)
+def generate_managers_and_reviewer_names():
+    print("Generating reviewer names and managers")
+    for i, module in enumerate(list_of_halon_modules):
+        with open(module.path, "r") as file:
+            temp_list_of_emails_from_REVIEWER_file = file.readlines()
+            if "\n" in temp_list_of_emails_from_REVIEWER_file:
+                temp_list_of_emails_from_REVIEWER_file.remove("\n") # if there are "\n" values in the array remove them
+            temp_list_of_emails_from_REVIEWER_file = [f.replace("\n", "") for f in temp_list_of_emails_from_REVIEWER_file] # if there are \n's ?at the end of the values in the string remove it
+            should_get_manager = True
+            for email in temp_list_of_emails_from_REVIEWER_file:
+                name = get_name_from_email(email)
+                if should_get_manager:
+                    module.manager.email = get_manager_email(email)
+                    module.manager.name  = get_name_from_email(module.manager.email)
+                    should_get_manager = False
+                module.reviewers.append(Person(email, name))
+            should_get_manager = True
+            file.close()
+    print("Done Generating Names")
 
-array_files = array_files_processed
+# Use ldap search to get the name of the user who owns the provided email
 
-print(array_files)
+def get_name_from_email(email):
+    cmd  = "/usr/bin/ldapsearch -x -h ldap.hp.com -S hpStatus -b ou=People,o=hp.com uid=" + email + " | grep ^cn: | awk -F: '{print $2}'"
+    p    = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+    name = p.communicate()[0]
+    name = name[:-1]
 
-array_len = len(array_files)
+    if name == "":
+        name = "ERROR WITH LDAP NAME LOOKUP"
 
-print("Generating Managers and Names")
+    return name
 
-for i in range(0, array_len):
-    with open(array_files[i], "r") as file:
-        temp_array_of_read_emails = file.readlines()
-        if "\n" in temp_array_of_read_emails:
-            temp_array_of_read_emails.remove("\n") # if there are "\n" values in the array remove them
-        temp_array_of_read_emails = [f.replace("\n", "") for f in temp_array_of_read_emails] # if there are \n's at the end of the values in the string remove it
-        names = []
-        getManager = True
-        for email in temp_array_of_read_emails:
-            cmd = "/usr/bin/ldapsearch -x -h ldap.hp.com -S hpStatus -b ou=People,o=hp.com uid=" + email + " | grep ^cn: | awk -F: '{print $2}'"
-            p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-            name = p.communicate()[0]
-            name = name[:-1]
-            if name == "":
-                name = "ERROR WITH LDAP NAME LOOKUP"
-            if getManager:
-                manager_cmd = "/usr/bin/ldapsearch -x -h ldap.hp.com -S hpStatus -b ou=People,o=hp.com uid=" + email + " | grep manager: | awk -F: '{print $2}' | awk -F, '{print $1}' | awk -F= '{print $2}'"
-                p = subprocess.Popen(manager_cmd, shell=True, stdout=subprocess.PIPE)
-                manager_email = p.communicate()[0]
-                manager_email = manager_email[:-1]
-                manager_name_cmd = "/usr/bin/ldapsearch -x -h ldap.hp.com -S hpStatus -b ou=People,o=hp.com uid=" + manager_email + " | grep ^cn: | awk -F: '{print $2}'"
-                p = subprocess.Popen(manager_name_cmd, shell=True, stdout=subprocess.PIPE)
-                manager_name = p.communicate()[0]
-                manager_name = manager_name[:-1]
-                if manager_name == "":
-                    manager_name = "ERROR WITH LDAP NAME LOOKUP"
-                names.append("Manager: " + manager_name + "\nEmail: " + manager_email)
-                getManager = False
-            names.append("Name: " + name + "\nEmail: " + email)
-        array_names.append(names)
-        getManager = True
-        file.close()
+# Use ldap search to get the email of the manager who owns the provided email
 
-print("Done Generating Names")
+def get_manager_email(email):
 
-# Crop all uncessary inf
+    #use subprocess to call ldap search to get the manager of the user who owns the email
+    manager_cmd = "/usr/bin/ldapsearch -x -h ldap.hp.com -S hpStatus -b ou=People,o=hp.com uid=" + email + " | grep manager: | awk -F: '{print $2}' | awk -F, '{print $1}' | awk -F= '{print $2}'"
+    p           = subprocess.Popen(manager_cmd, shell=True, stdout=subprocess.PIPE)
 
-array_files_shorthand = []
+    manager_email = p.communicate()[0]
+    manager_email = manager_email[:-1]
 
-for file in array_files:
-    search = re.search('[^/]+(?=/REVIEWERS)', file)
-    result = search.group(0)
-    array_files_shorthand.append(result)
+    return manager_email
 
-array_files = array_files_shorthand
+#Use regex to get the name of the folder that contains the reviewer file
 
-dictionary = dict(zip(array_files_shorthand, array_names))
+def get_name_of_module(path):
+    search = re.search('[^/]+(?=/REVIEWERS)', path)
+    return search.group(0)
 
-sorted_list = sorted(dictionary.items(), key=operator.itemgetter(0))
+def remove_cookie_cutters():
+    list_of_bad_indicies = []
+    # pdb.set_trace()
+    for i, module in enumerate(list_of_halon_modules):
+        # pdb.set_trace()
+        if "{{ cookiecutter.daemon_name }}" in module.name:
+            list_of_bad_indicies.append(i)
+            print("Index {}".format(i))
+            print("Module {}".format(module.name))
+        list_of_bad_reviewers_indicies = []
+        for i, reviewer in enumerate(module.reviewers):
+            if "{{cookiecutter.reviewer}}" in reviewer.email:
+                list_of_bad_reviewers_indicies.append(i)
+        for index in list_of_bad_reviewers_indicies:
+            del module.reviewers[index]
+    # pdb.set_trace()
+    for index in list_of_bad_indicies:
+        del list_of_halon_modules[index]
 
-html_output = ""
+# Module HTML Structure
 
-print("Generating HTML")
+"""
+<div id="hpe-mcastfwd-switchd-plugin
+        kchavesr@hpe.com  kattia chaves ramirez
+        acorvil@hpe.com  arturo jesus corrales
+        villalobosbyron.rojas@hpe.com  byron josue rojas
+        valverdejavier.albornoz@hpe.com  javier
+        albornozrodrigo.j.hernandez@hpe.com  rodrigo jose hernandez cordoba" class="grid-item" style="position: absolute; left: 16px; top: 0.15px;">
 
-while sorted_list:
-    pair = sorted_list.pop(0)
-    html_output += """<div id="{} """.format(pair[0])
-    for member in pair[1]:
-    	html_output += """{}""".format(member.lower())
-    html_output += """" class="grid-item"><div class="w3-card-8 w3-margin card"><h2 class="w3-center w3-text-white w3-padding" style="background-color: #5F7A76;">{}</h2><div class="w3-padding"><div class="w3-large" style="white-space: pre-line"><div class="w3-dropdown-hover w3-hover-khaki" style="width: 100%">{}<i class="material-icons" style="position: relative; bottom: 28px; float: right">perm_identity</i><div class="w3-dropdown-content w3-card-8 w3-padding w3-round">{}</div></div>""".format(pair[0], pair[1].pop(1) + "\n", pair[1].pop(0))
-    for member in pair[1]:
-    	html_output += """{}\n\n""".format(member)
-    html_output += """</div></div></div></div>\n"""
+    <div class="w3-card-8 w3-margin card">
+        <h2 class="w3-center w3-text-white w3-padding" style="background-color: #5F7A76;">hpe-mcastfwd-switchd-plugin</h2>
+        <div class="w3-padding"><div class="w3-large" style="white-space: pre-line">
+            <div class="w3-dropdown-hover w3-hover-khaki" style="width: 100%">
+                Name: Arturo Jesus Corrales Villalobos
+                Email: acorvil@hpe.com
+                <i class="material-icons" style="position: relative; bottom: 28px; float: right">perm_identity</i>
+                <div class="w3-dropdown-content w3-card-8 w3-padding w3-round">
+                    Name: Kattia Chaves Ramirez
+                    Email: kchavesr@hpe.com
+                </div>
+            </div>
 
-print(html_output)
+            Name: Byron Josue Rojas Valverde
+            Email: byron.rojas@hpe.com
 
-print("Done Generating HTML")
+            Name: Javier Albornoz
+            Email: javier.albornoz@hpe.com
 
-output_file = open("/var/www/html/halon_src_reviewers/resources/output.html", "w")
+            Name: Rodrigo Jose Hernandez Cordoba
+            Email: rodrigo.j.hernandez@hpe.com
+            </div>
+        </div>
+    </div>
+</div>
+"""
 
-output_file.write(html_output)
+# Generates and populates the structure above to be rendered by the website
 
-output_file.close()
+# Name of module group is used for selection purposes
+
+def generate_html(dir_for_output_file, name_of_module_group):
+    html_output = ""
+
+    #iterate through modules and generate the html for each module
+    for module in list_of_halon_modules:
+        if (len(module.reviewers) == 0):
+            continue
+        html_output += """<div id="{} {} {} {} """.format(name_of_module_group, module.name.lower(), module.manager.email.lower(), module.manager.name.lower())
+        for reviewer in module.reviewers:
+            html_output += """{} {}""".format(reviewer.email.lower(), reviewer.name.lower())
+        html_output += """" class="grid-item"><div class="w3-card-8 w3-margin card"><h2 class="w3-center w3-text-white w3-padding" style="background-color: #5F7A76;">{}</h2><div class="w3-padding"><div class="w3-large" style="white-space: pre-line"><div class="w3-dropdown-hover w3-hover-khaki" style="width: 100%">Name:{}\nEmail: {}\n<i class="material-icons" style="position: relative; bottom: 28px; float: right">perm_identity</i><div class="w3-dropdown-content w3-card-8 w3-padding w3-round">Name:{}\nEmail: {}</div></div>\n""".format(module.name, module.reviewers[0].name, module.reviewers[0].email, module.manager.name, module.manager.email)
+        for reviewer in module.reviewers: # skip the first card as it was already added to the template
+            if reviewer.email is module.reviewers[0].email:
+                continue
+            html_output += """Name:{}\nEmail: {}\n\n""".format(reviewer.name, reviewer.email)
+        html_output += """</div></div></div></div>\n"""
+
+    output_file = open(dir_for_output_file, "a")
+    output_file.write(html_output)
+    output_file.close()
+
+
+dir_for_output_file = "/var/www/html/halon_src_reviewers/resources/halon_src_output.html"
+
+open(dir_for_output_file, 'w').close()
+
+
+dir_for_halon_root = "/ws/web/halon/halon-src/"
+paths = find_all_REVIEWER_files(dir_for_halon_root)
+list_of_files = create_list_from_bash_output(paths)
+generate_managers_and_reviewer_names()
+remove_cookie_cutters()
+# for card in list_of_halon_modules:
+#     card.print_card()
+generate_html(dir_for_output_file, "halon-src");
+
+dir_for_halon_root = "/ws/web/halon/halon-test/"
+paths = find_all_REVIEWER_files(dir_for_halon_root)
+list_of_files = create_list_from_bash_output(paths)
+generate_managers_and_reviewer_names()
+# for card in list_of_halon_modules:
+#     card.print_card()
+generate_html(dir_for_output_file, "halon-test");
