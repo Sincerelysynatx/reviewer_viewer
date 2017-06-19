@@ -199,8 +199,12 @@ def generate_html(dir_for_output_file, name_of_module_group):
     output_file.write(html_output)
     output_file.close()
 
+def clean_module_list():
+    for module in list_of_halon_modules:
+        del module
 
-dir_for_output_file = "/var/www/html/halon_src_reviewers/resources/halon_src_output.html"
+
+dir_for_output_file = "/ws/web/reviewer_viewer/website/resources/output.html"
 
 open(dir_for_output_file, 'w').close()
 
@@ -214,8 +218,7 @@ remove_cookie_cutters()
 #     card.print_card()
 generate_html(dir_for_output_file, "halon-src");
 
-for module in list_of_halon_modules:
-    del module
+
 
 dir_for_halon_root = "/ws/web/halon/halon-test/"
 paths = find_all_REVIEWER_files(dir_for_halon_root)
