@@ -5,8 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d6c3194-386d-47aa-915e-43de44cc4d1d" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/python_scripts/generate_reviewers.py" afterPath="$PROJECT_DIR$/python_scripts/generate_reviewers.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/website/resources/output.html" afterPath="$PROJECT_DIR$/website/resources/output.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/website/resources/output_temp.html" afterPath="$PROJECT_DIR$/website/resources/output_temp.html" />
     </list>
     <ignored path="reviewer_viewer.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -32,8 +32,8 @@
       <file leaf-file-name="output.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/website/resources/output.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="264">
-              <caret line="12" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="662" />
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -305,32 +305,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="264">
           <caret line="12" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="1261" selection-end-column="0" />
-          <folding>
-            <marker date="1497895400656" expanded="true" signature="449431:449446" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="449431:449452" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="449431:449458" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="449431:449464" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="449646:450303" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="449684:450297" ph="..." />
-            <marker date="1497895400656" expanded="false" signature="449739:449765" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="449806:450291" ph="..." />
-            <marker date="1497895400656" expanded="false" signature="449836:449857" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="449858:450285" ph="..." />
-            <marker date="1497895400656" expanded="false" signature="449912:449923" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="449924:450186" ph="..." />
-            <marker date="1497895400656" expanded="false" signature="450003:450049" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="450130:450180" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="450445:451048" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="450483:451042" ph="..." />
-            <marker date="1497895400656" expanded="false" signature="450538:450564" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="450601:451036" ph="..." />
-            <marker date="1497895400656" expanded="false" signature="450631:450652" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="450653:451030" ph="..." />
-            <marker date="1497895400656" expanded="false" signature="450707:450718" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="450719:450981" ph="..." />
-            <marker date="1497895400656" expanded="false" signature="450798:450844" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="450925:450975" ph="..." />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -430,34 +405,9 @@
     <entry file="file://$PROJECT_DIR$/website/resources/reviewers.txt" />
     <entry file="file://$PROJECT_DIR$/website/resources/output.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="12" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="662" />
-          <folding>
-            <marker date="1497895400656" expanded="true" signature="449431:449446" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="449431:449452" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="449431:449458" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="449431:449464" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="449646:450303" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="449684:450297" ph="..." />
-            <marker date="1497895400656" expanded="false" signature="449739:449765" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="449806:450291" ph="..." />
-            <marker date="1497895400656" expanded="false" signature="449836:449857" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="449858:450285" ph="..." />
-            <marker date="1497895400656" expanded="false" signature="449912:449923" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="449924:450186" ph="..." />
-            <marker date="1497895400656" expanded="false" signature="450003:450049" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="450130:450180" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="450445:451048" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="450483:451042" ph="..." />
-            <marker date="1497895400656" expanded="false" signature="450538:450564" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="450601:451036" ph="..." />
-            <marker date="1497895400656" expanded="false" signature="450631:450652" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="450653:451030" ph="..." />
-            <marker date="1497895400656" expanded="false" signature="450707:450718" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="450719:450981" ph="..." />
-            <marker date="1497895400656" expanded="false" signature="450798:450844" ph="..." />
-            <marker date="1497895400656" expanded="true" signature="450925:450975" ph="..." />
-          </folding>
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>

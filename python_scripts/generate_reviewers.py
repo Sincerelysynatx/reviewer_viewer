@@ -127,13 +127,13 @@ def remove_cookie_cutters():
     # pdb.set_trace()
     for i, module in enumerate(list_of_halon_modules):
         # pdb.set_trace()
-        if "{{ cookiecutter.daemon_name }}" in module.name:
+        if "cookiecutter.daemon_name" in module.name:
             list_of_bad_indicies.append(i)
             print("Index {}".format(i))
             print("Module {}".format(module.name))
         list_of_bad_reviewers_indicies = []
         for i, reviewer in enumerate(module.reviewers):
-            if "{{cookiecutter.reviewer}}" in reviewer.email:
+            if "cookiecutter.reviewer" in reviewer.email:
                 list_of_bad_reviewers_indicies.append(i)
         for index in list_of_bad_reviewers_indicies:
             del module.reviewers[index]
@@ -217,14 +217,14 @@ def run_main_program(starting_directory, tag_associated_with_directory):
     #     card.print_card()
     generate_html(dir_for_temp_output_file, tag_associated_with_directory);
 
-dir_for_output_file = "/users/pimentes/Desktop/reviewer/website/resources/output.html"#"/ws/web/reviewer_viewer/website/resources/output.html"
-dir_for_temp_output_file = "/users/pimentes/Desktop/reviewer/website/resources/output_temp.html" #"/ws/web/reviewer_viewer/website/resources/output_temp.html"
+dir_for_output_file = "/ws/web/reviewer_viewer/website/resources/output.html"#"/users/pimentes/Desktop/reviewer/website/resources/output.html"
+dir_for_temp_output_file = "/ws/web/reviewer_viewer/website/resources/output_temp.html"#"/users/pimentes/Desktop/reviewer/website/resources/output_temp.html"
 
 open(dir_for_temp_output_file, 'w').close()
 
-run_main_program("/ws/pimentes/halon-temp/halon/halon-src", "halon-src") #"/ws/web/halon/halon-src/"
+run_main_program("/ws/web/halon/halon-src/", "halon-src") #"/ws/pimentes/halon-temp/halon/halon-src"
 clean_module_list()
-run_main_program("/ws/pimentes/halon-temp/halon/halon-test", "halon-test") #"/ws/web/halon/halon-test/"
+run_main_program("/ws/web/halon/halon-test/", "halon-test") #"/ws/pimentes/halon-temp/halon/halon-test"
 
 open(dir_for_output_file, 'w').close()
 
