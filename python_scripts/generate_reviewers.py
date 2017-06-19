@@ -5,6 +5,7 @@ import operator
 import re
 import pdb
 import threading
+from shutil import copyfile
 
 global list_of_halon_modules
 list_of_halon_modules = []
@@ -26,6 +27,9 @@ class Module:
         print('\t' + "Manager of module manager: " + self.manager.name + " " + self.manager.email)
         for reviewer in self.reviewers:
             print('\t' + reviewer.name + " " + reviewer.email)
+
+    def clean_self(self):
+        self.reviewers = []
 
 
 # Run find to gather all the paths to the reviewer files
@@ -178,7 +182,7 @@ def remove_cookie_cutters():
 
 # Name of module group is used for selection purposes
 
-def generate_html(dir_for_output_file, name_of_module_group):
+def generate_html(dir_for_temp_output_file, name_of_module_group):
     html_output = ""
 
     #iterate through modules and generate the html for each module
@@ -195,35 +199,33 @@ def generate_html(dir_for_output_file, name_of_module_group):
             html_output += """Name:{}\nEmail: {}\n\n""".format(reviewer.name, reviewer.email)
         html_output += """</div></div></div></div>\n"""
 
-    output_file = open(dir_for_output_file, "a")
+    output_file = open(dir_for_temp_output_file, "a")
     output_file.write(html_output)
     output_file.close()
 
 def clean_module_list():
     for module in list_of_halon_modules:
+        module.clean_self()
         del module
 
+def run_main_program(starting_directory, tag_associated_with_directory):
+    paths = find_all_REVIEWER_files(starting_directory)
+    list_of_files = create_list_from_bash_output(paths)
+    generate_managers_and_reviewer_names()
+    remove_cookie_cutters()
+    # for card in list_of_halon_modules:
+    #     card.print_card()
+    generate_html(dir_for_temp_output_file, tag_associated_with_directory);
 
-dir_for_output_file = "/ws/web/reviewer_viewer/website/resources/output.html"
+dir_for_output_file = "/users/pimentes/Desktop/reviewer/website/resources/output.html"#"/ws/web/reviewer_viewer/website/resources/output.html"
+dir_for_temp_output_file = "/users/pimentes/Desktop/reviewer/website/resources/output_temp.html" #"/ws/web/reviewer_viewer/website/resources/output_temp.html"
+
+open(dir_for_temp_output_file, 'w').close()
+
+run_main_program("/ws/pimentes/halon-temp/halon/halon-src", "halon-src") #"/ws/web/halon/halon-src/"
+clean_module_list()
+run_main_program("/ws/pimentes/halon-temp/halon/halon-test", "halon-test") #"/ws/web/halon/halon-test/"
 
 open(dir_for_output_file, 'w').close()
 
-
-dir_for_halon_root = "/ws/web/halon/halon-src/"
-paths = find_all_REVIEWER_files(dir_for_halon_root)
-list_of_files = create_list_from_bash_output(paths)
-generate_managers_and_reviewer_names()
-remove_cookie_cutters()
-# for card in list_of_halon_modules:
-#     card.print_card()
-generate_html(dir_for_output_file, "halon-src");
-
-
-
-dir_for_halon_root = "/ws/web/halon/halon-test/"
-paths = find_all_REVIEWER_files(dir_for_halon_root)
-list_of_files = create_list_from_bash_output(paths)
-generate_managers_and_reviewer_names()
-# for card in list_of_halon_modules:
-#     card.print_card()
-generate_html(dir_for_output_file, "halon-test");
+copyfile(dir_for_temp_output_file, dir_for_output_file)
