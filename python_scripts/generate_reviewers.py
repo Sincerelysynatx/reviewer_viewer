@@ -37,7 +37,7 @@ class Module:
 def find_all_REVIEWER_files(directory):
     print("Finding REVIEWER Files")
 
-    p = subprocess.Popen(['find', directory,'-name', 'REVIEWERS'],
+    p = subprocess.Popen(['find', directory, '-name', 'REVIEWERS'],
                      stdout=subprocess.PIPE,
                      stderr=subprocess.PIPE)
 
@@ -47,28 +47,11 @@ def find_all_REVIEWER_files(directory):
 
 # Take all the results from the find and put them into an array and remove empty directories
 
-def create_list_from_bash_output(paths):
+def create_list_from_bash_output(paths, length_of_path):
     array_files = paths.splitlines()
     for path in array_files:
-        list_of_halon_modules.append(Module(get_name_of_module(path), path))
-    #array_files.remove("")
-    #print(array_files)
+        list_of_halon_modules.append(Module(get_name_of_module(path, length_of_path), path))
     return array_files
-
-# Unused, was needed before
-def remove_unwanted_paths(array_files, keywords):
-    array_files_processed = []
-    for file in array_files:
-        for keyword in keywords:
-            if keyword not in file:
-                array_files_processed.append(file)
-    # print(array_files_processed)
-    return array_files_processed
-    #for file in array_files:
-    #    if keywords not in file:
-    #        array_files_processed.append(file)
-
-#
 
 def generate_managers_and_reviewer_names():
     print("Generating reviewer names and managers")
@@ -118,9 +101,10 @@ def get_manager_email(email):
 
 #Use regex to get the name of the folder that contains the reviewer file
 
-def get_name_of_module(path):
-    search = re.search('[^/]+(?=/REVIEWERS)', path)
-    return search.group(0)
+def get_name_of_module(path, length_of_path):
+    left_trim = path[(length_of_path):]             #trim off ./halon-src or ./halon-test
+    right_trim = left_trim[:-10]                    #trim off /REVIEWERS
+    return right_trim
 
 def remove_cookie_cutters():
     list_of_bad_indicies = []
@@ -210,21 +194,22 @@ def clean_module_list():
 
 def run_main_program(starting_directory, tag_associated_with_directory):
     paths = find_all_REVIEWER_files(starting_directory)
-    list_of_files = create_list_from_bash_output(paths)
+    list_of_files = create_list_from_bash_output(paths, len(starting_directory))
     generate_managers_and_reviewer_names()
     remove_cookie_cutters()
     # for card in list_of_halon_modules:
     #     card.print_card()
     generate_html(dir_for_temp_output_file, tag_associated_with_directory);
 
-dir_for_output_file = "/ws/web/reviewer_viewer/website/resources/output.html"#"/users/pimentes/Desktop/reviewer/website/resources/output.html"
-dir_for_temp_output_file = "/ws/web/reviewer_viewer/website/resources/output_temp.html"#"/users/pimentes/Desktop/reviewer/website/resources/output_temp.html"
+dir_for_output_file = "/ws/web/reviewer_viewer/website/resources/cards.html"#"/users/pimentes/Desktop/reviewer/website/resources/cards.html"
+dir_for_temp_output_file = "/ws/web/reviewer_viewer/website/resources/cards_temp.html"#"/users/pimentes/Desktop/reviewer/website/resources/cards_temp.html"
 
 open(dir_for_temp_output_file, 'w').close()
 
 run_main_program("/ws/web/halon/halon-src/", "halon-src") #"/ws/pimentes/halon-temp/halon/halon-src"
 clean_module_list()
 run_main_program("/ws/web/halon/halon-test/", "halon-test") #"/ws/pimentes/halon-temp/halon/halon-test"
+clean_module_list()
 
 open(dir_for_output_file, 'w').close()
 
