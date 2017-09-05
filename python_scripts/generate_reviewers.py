@@ -25,6 +25,7 @@ class Module:
     def print_card(self):
         print(self.name + " " + self.path)
         print('\t' + "Manager of module manager: " + self.manager.name + " " + self.manager.email)
+        print('\t' + "Reviewers")
         for reviewer in self.reviewers:
             print('\t' + reviewer.name + " " + reviewer.email)
 
@@ -197,18 +198,23 @@ def run_main_program(starting_directory, tag_associated_with_directory):
     list_of_files = create_list_from_bash_output(paths, len(starting_directory))
     generate_managers_and_reviewer_names()
     remove_cookie_cutters()
-    # for card in list_of_halon_modules:
-    #     card.print_card()
     generate_html(dir_for_temp_output_file, tag_associated_with_directory);
+    for card in list_of_halon_modules:
+        card.print_card()
 
-dir_for_output_file = "/ws/web/reviewer_viewer/website/resources/cards.html"#"/users/pimentes/Desktop/reviewer/website/resources/cards.html"
-dir_for_temp_output_file = "/ws/web/reviewer_viewer/website/resources/cards_temp.html"#"/users/pimentes/Desktop/reviewer/website/resources/cards_temp.html"
+# dir_for_output_file = "/ws/web/reviewer_viewer/website/resources/cards.html"
+dir_for_output_file = "/users/pimentes/Desktop/reviewer/website/resources/cards.html"
+# dir_for_temp_output_file = "/ws/web/reviewer_viewer/website/resources/cards_temp.html"
+dir_for_temp_output_file = "/users/pimentes/Desktop/reviewer/website/resources/cards_temp.html"
 
 open(dir_for_temp_output_file, 'w').close()
 
-run_main_program("/ws/web/halon/halon-src/", "halon-src") #"/ws/pimentes/halon-temp/halon/halon-src"
+print("Halon Src")
+run_main_program("/ws/web/halon/halon-src/", "halon-src")
 clean_module_list()
-run_main_program("/ws/web/halon/halon-test/", "halon-test") #"/ws/pimentes/halon-temp/halon/halon-test"
+
+print("Halon Test")
+run_main_program("/ws/web/halon/halon-test/", "halon-test")
 clean_module_list()
 
 open(dir_for_output_file, 'w').close()
