@@ -202,10 +202,10 @@ def run_main_program(starting_directory, tag_associated_with_directory):
     for card in list_of_halon_modules:
         card.print_card()
 
-# dir_for_output_file = "/ws/web/reviewer_viewer/website/resources/cards.html"
-dir_for_output_file = "/users/pimentes/Desktop/reviewer/website/resources/cards.html"
-# dir_for_temp_output_file = "/ws/web/reviewer_viewer/website/resources/cards_temp.html"
-dir_for_temp_output_file = "/users/pimentes/Desktop/reviewer/website/resources/cards_temp.html"
+dir_for_output_file = "/ws/web/reviewer_viewer/website/resources/cards.html"
+# dir_for_output_file = "/users/pimentes/Desktop/reviewer/website/resources/cards.html"
+dir_for_temp_output_file = "/ws/web/reviewer_viewer/website/resources/cards_temp.html"
+# dir_for_temp_output_file = "/users/pimentes/Desktop/reviewer/website/resources/cards_temp.html"
 
 open(dir_for_temp_output_file, 'w').close()
 
