@@ -12,7 +12,7 @@ sean.pat.pimentel@hpe.com
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Halon Reviewers</title>
     <link rel="stylesheet" href="css/material_icons.css">
     <link rel="stylesheet" href="css/w3.css">
     <link rel="stylesheet" href="css/styles.css">
@@ -87,18 +87,19 @@ sean.pat.pimentel@hpe.com
 <body style="min-width: 1300px">
 
 <div class="w3-container w3-center">
-    <p class="w3-xxxlarge"><b>Halon Module Reviewers</b></p>
+    <h2><b>Halon Module Reviewers</b></h2>
 </div>
 
 <div class="w3-container w3-large" style="position: relative;">
     <div class="w3-card-2 w3-margin" style="position: relative;">
         <form class="w3-container w3-padding" style="background-color: #01A982">
             <span class="w3-row">
-                <input id="search" class="w3-input w3-round w3-col" type="text" placeholder="ops-switchd or Nehal" autocomplete="off" style="width: 60%">
-                <div class="w3-btn-bar w3-rest w3-center">
-                    <div class="w3-btn w3-margin-left w3-large" id="halon_src_btn" onclick="switch_grid('source')">Halon Source</div>
-                    <div class="w3-btn w3-large" id="halon_test_btn" onclick="switch_grid('test')">Halon Test</div>
-                    <i class="material-icons white" style="line-height: 39px">search</i>
+                <!--<div class="w3-col s1"> </div>-->
+                <i class="material-icons white w3-right-align w3-col s1" style="line-height: 45px; margin-right: 8px">search</i>
+                <input id="search" class="w3-input w3-round w3-col s5" type="text" placeholder="ops-switchd or Nehal" autocomplete="off" style="width: 60%">
+                <div class="w3-btn-bar w3-rest w3-center w3-row">
+                    <div class="w3-btn w3-center w3-margin-left w3-large w3-col s4" id="halon_src_btn" onclick="switch_grid('source')">Halon Source</div>
+                    <div class="w3-btn w3-center w3-large w3-col s4" id="halon_test_btn" onclick="switch_grid('test')">Halon Test</div>
                 </div>
             </span>
         </form>
